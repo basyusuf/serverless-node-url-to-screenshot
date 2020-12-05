@@ -1,0 +1,28 @@
+service: screenshotproject
+frameworkVersion: '2'
+
+custom:
+  bucket: screenshot-buckets-test # Sizin oluşturduğunuz bucket'ın ismi
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  region: eu-central-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - s3:* # S3 ile alakalı tüm izinleri veriyoruz
+      Resource: "arn:aws:s3:::${self:custom.bucket}/*" # Bucket url tanımlaması yapıyoruz
+
+functions:
+  takePageScreenshot:
+    handler: handler.main
+    memorySize: 2048
+    timeout: 10
+    description: "Captures and saves the page image. Sends the path to the saved image."
+    layers: # Kurulumunu yaptığımız lambda layerımız
+      - "arn:aws:lambda:eu-central-1:208565301474:layer:chrome-aws-lambda-layer:1"
+    events:
+      - http:
+          path: /takePageScreenshot
+          method: post
