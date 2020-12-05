@@ -71,5 +71,4 @@ const putObjectToS3 = async(key, data) => {
           }
       });
   });
-
 }
